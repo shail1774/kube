@@ -1,0 +1,65 @@
+Init Container
+
+It is specialied containers that run before application containers in POD.
+Init container can contain utilities or setup script which not present in an application image.
+
+Init container always run to completeion. each init container must complete successfully before next one start.
+
+if pod init container fails, kubelet repeatedly restart that init container until it succeeds.
+
+however pod has restart policy of never and an init container fails during tartup of that pod, kubernetes treats overall pod as failed.
+
+Init containers can contain utilities or custom code for setup that are not present in an app image. For example, there is no need to make an image FROM another image just to use a tool like sed, awk, python, or dig during setup.
+
+differance from regular container
+
+Init container support all feilds and feature of app container including resource limit, volumes and security setting.
+
+Also init container do not support lifecycle, liveness probe, readiness probe, startup probe because they must un to completeion before pod an be ready.
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: busybox:1.28
+    command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+  initContainers:
+  - name: init-myservice
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+  - name: init-mydb
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+    
+    
+You can start this Pod by running:
+#kubectl apply -f myapp.yaml
+
+And check on its status with:
+#kubectl get -f myapp.yaml    
+
+To see logs for the init containers in this Pod, run:
+#kubectl logs myapp-pod -c init-myservice # Inspect the first init container
+
+
+
+Side car Container
+
+A pod is composed of one or more application containers.
+A side car is utility container in the pod and it purpose is to support main container.
+
+generally side car container is reusable and can be paiered with numerous type of main container.
+
+Sidecar containers are the containers that should run along with the main container in the pod.
+Imagine that you have the pod with a single container working very well and you want to add some functionality to the current container without touching or changing, 
+how can you add the additional functionality or extending the current functionality? This sidecar container pattern really helps exactly in that situation.
+
+
+
+
