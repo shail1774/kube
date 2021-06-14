@@ -84,6 +84,19 @@ Config Map :-
               External configuration of your application.
               Usually container configuration data
               In k8s, youjust connect configmap to pod.
+              A configMap is a dictionary of configuration setting, this dictionary consists of key-value pairs of strings. k8s provides these values to your container.
+              Use configMap to keep your application code seperate from our configuration.
+              This let you change easily configuration depending on environment (Dev Prod Testing) and to dynamically change configuration at runtime.
+              A configMAp used to store configuration setting for your code, store connection strings, public credentials, hostname, URL in ConfigMap.
+              
+              Defining ConfigMap in YAML and mounting it as a volume is easiest way to use configMaps.
+              you can consume a configMAp via environment variable in running container using envfrom property.
+              
+              There are 3 ways to create configMaps using kubectl, create configMap command.
+              1> use content of entire directory.
+              2> use contenrt of file or specific set of files.
+              3> use literal key-value pairs defined on command line.
+           
               
               
    
