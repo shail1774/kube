@@ -21,11 +21,63 @@ Service :- Permanant IP address attached to each pod
  A deployment is responsible for keeping a set of pods running.
  A service is responsible for enabling network access to set of pods.
  
- we could use a deployment without service to keep a set 
+ we could use a deployment without service to keep a set of identical pods running in k8s cluster.
+ deployment could be scaled up and down and pods could be replicated.
+ 
+ we could use a service withut deployment. we need to create each pod individually rather than all at once like deployment. 
+ Then our service could route network request to those pods via selecting thembased on their labels.
+ 
+ service and deployment are diffrent but they work toghether nicely.
+ 
+ Type of services
+ 
+ The Type property in service specification determine how service exposed to network.
+ The possible type are ClusterIP, NodePort and Load balancer.
+ 
+ 
+ 1> ClusterIP :- 
+                  The default value. The service is only accessible from within k8s cluster.
+                  you can't make request to your pods from outside cluster.
+                  There is no external access.
+                 
+ 2> NodePort :- 
+                  This make service accessible on static port on ach node in the cluster. This means that service can handle requests originates from outside the cluster.
+                  A Node port service is most primitive way to get external traffice directly to your service.
+                  NodePort as a name implies, open a specific port on all nodes (VMs) and any traffice that is sent to this port is forwarded to serivce.
+                  You can only have one service per port.
+                  you can only use ports 30000-32767
+                  if your Node|VM IP address change then you need to deal with that.
+                  For this reason, I don't recommend using this method in production to directly your service.
+                  a good example of such an application is a demoapp or something temporary.
+                  
+ 3> LoadBalancer :- 
+                 The service becomes accessible externally through cloud provider's load balancer functionality.
+                 The cloud provider will create a load balancer which then automatically routes equest to your k8s service.
+                 A Load Balancer service is standard way to expose a service to internet.
+                 if you want to directly expose service, this is default method. all traffic on port, you specify will be forwarded to the service, 
+                 there is no filtering no routing.
+                 the big downside is that each service you expose with load balancer will get its own ip address 
+                 and you have to pay for a load balancer per exposed service which can get expensive.
+                 
+                 
+                 
+ 
            
            
 Ingress :- Secure protocol and domain name
            Request goes to ingress and ingress forwarding request to service.
+           In kubernetes, an ingress is an object that allows access to your k8s service from outside the k8s cluster.
+           you configure access by creating a collection of rules that define which inbound connection reach which services.
+           Ingress is actually not a type of service instead of it sits in front of multiple services and act as a smart router or entrypoint into your cluster.
+           This will let you do both path based and subdomain based routing to backend service.
+           Ingress is most useful if you want to expose multiple services under the same ip address.
+           
+           for Exa :- you can send everything on foo.example.com to foo service and everything under yourdomain.com/bar/ path to bar service.
+           
+           
+           
+  Ingress vs LB vs NodePort :- these 3 options all do the same thing. They let you expose a service to external network request.
+                               they let you send a request from outside the k8s cluster to service inside the cluster.     
            
            
 Config Map :- 
