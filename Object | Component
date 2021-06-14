@@ -11,6 +11,18 @@ Pod :-
 Service :- Permanant IP address attached to each pod
            lifecycle of pod and service is not connected.
            
+---->  
+            A service enables network access to set of pods in kubernetes
+            service select pods based on their lables, when network request is made to the service, it select all pods in cluster, 
+            matching service selector choose one of them and forwards network request to it.
+            
+ Services vs deployment
+ 
+ A deployment is responsible for keeping a set of pods running.
+ A service is responsible for enabling network access to set of pods.
+ 
+ we could use a deployment without service to keep a set 
+           
            
 Ingress :- Secure protocol and domain name
            Request goes to ingress and ingress forwarding request to service.
