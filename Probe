@@ -1,0 +1,47 @@
+Liveness Probe --
+
+It indicates whether container is running.
+if liveness probe fails, kubelete kills container and container is subject to restart policy
+if the container does not provide a liveness probe then default state is success.
+
+if you do like to your container to be killed and restarted if probe failed then specify a liveness probe and specify restart policy of always or on failuer
+
+
+Readiness probe --
+
+It indicate whether container is ready to respond to request.
+
+if readiness probe failes then endpoint controller remove pod's ip address from endpoint of all services that match the pod.
+
+the default state of readiness probe before inital delay is failuer.
+
+if the container does not provide readiness probe the default state is success.
+
+if you like to start sending traffic to pod only when probe succeeds specify the readiness probe.
+
+if your container needs to work on loading large data, config files or migration during startup specify readiness probe.
+
+
+Startup probe --
+
+It indicate whether application within container is started.
+
+all other probe are disabled if startup probe is provided until it succeeds.
+
+if the startup probe fails, kubelet kills the container and contaier is subject to its restart policy. The default is success.
+
+startup probe are useful for pods that have container that take long time to come into service.
+
+if your container usually starts in more than initalDelaySeconds + FailuerThreshold + PeriodSeconds, you should specify a startup probe that checks same endpoints as liveness probe.
+
+The default fo period seconds is 10s.
+
+
+
+
+
+
+
+
+
+
