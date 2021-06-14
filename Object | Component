@@ -1,0 +1,61 @@
+Node :- Physical | Vietual | Cloud
+
+Pod :-
+      Smallest unit of kubernetes
+      Abstraction over container
+      Usually 1 app per pod
+      each pod has its own ip address
+      get new ip address on recreation
+      
+      
+Service :- Permanant IP address attached to each pod
+           lifecycle of pod and service is not connected.
+           
+           
+Ingress :- Secure protocol and domain name
+           Request goes to ingress and ingress forwarding request to service.
+           
+           
+Config Map :- 
+              External configuration of your application.
+              Usually container configuration data
+              In k8s, youjust connect configmap to pod.
+              
+              
+   
+ Secrets :- 
+            It just like config map but the diffrance is used to store secret data.
+            
+            -> credentials
+            -> base64 encoded format
+            -> password | Certificates
+            
+            Just like config map you just connect secret to pod.
+            Use configMap or secret data using it as environment variables or as a properties file.
+            secret must be created before deployment.
+            
+            
+ Deployment :- 
+                Define blueprint of pods
+                Replica sets
+                abstraction of pods
+                database can't be replicated via deployment
+                
+                
+ Statefulset :-
+          
+                Avoid data inconsistency
+                replication
+                specially for DB's
+                deployment for stateless apps
+                statefulset for stateful app or DB.
+
+
+
+ 
+            
+            
+           
+   
+   
+        
