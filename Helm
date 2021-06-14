@@ -1,0 +1,95 @@
+Package Manager for Kubernetes
+To package the YAML files and distribute them in public and private respitories
+So you can resue the configuration
+same application can be use accross diffrent environment. (Dev | Stagging | UAT | PROD)
+
+
+Helm Chart
+
+1> Bundle of YAML files
+2> Create your own helm chart with helm
+3> push them to helm repositories
+4> Download and use existing one
+
+
+example :- Database app | Monitoring App
+
+Helm v2 & v3
+
+Helm 2 - it come in 2 parts
+    1> client (Helm CLI)
+    2> Server (Tiller)
+    
+helm install <chart name>  
+    a> helm CLI send yaml files to tiller
+    b> tiller execute and create component
+    
+
+create and change the deployment
+
+Tiller will store copy of configuration for future refrence.
+
+#helm upgrade <chart name>
+
+changes are applied to existing deployment instead of creating new one.
+
+tiller keeping track of all chart execution.
+
+#helm rollback <chart name>
+               chart execution history
+               handling rollback
+
+Downside og helm v2
+
+1>  Tiller has too much power of k8s cluster (create | delete | modify)
+2>  Security issue
+
+Helm 3
+
+1> In helm 3 tiller got removed
+2> Solved the security concern but ake it more difficult to use.
+
+
+
+
+
+Helm chart structure'
+
+Directory structure :- 
+
+mychart.yaml
+  --chart.yaml
+  --values.yaml
+  --charts/
+  --templates/
+  
+mychart.yaml - top level folder name of helm chart.
+
+chart.yaml - meta info about chart names dependencies and version
+
+values.yaml - values for template files and default values
+
+chart Dir - chart dependencies
+
+template dir - template files and folder shared
+
+
+Command
+
+#helm install <chart name>
+
+Template files will be filled with values from values.yaml
+
+#helm install --values=my-values.yaml <chartname>    --- Override values of values.yaml file
+
+#helm install --set-version=2.0.0
+
+
+
+
+
+
+
+
+
+  
