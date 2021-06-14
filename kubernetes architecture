@@ -1,0 +1,21 @@
+Kubernetes Architecture
+
+Master  node
+Slave node | Worker node
+
+
+1> each node has multiple pod
+2> 3 processes must be running on every node
+3> worker nodes do the actual works.
+
+
+3 processes are
+1> Container Runtime :- docker
+2> Kubelet :- 
+              it interact with both container and node 
+              kubelete starts the pod with a container inside.
+              assigining resources to the container (cpu, memory, storage)
+              communication of services.
+              
+ 3> kube-proxy -              
+
