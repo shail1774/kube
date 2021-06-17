@@ -17,5 +17,94 @@ Slave node | Worker node
               assigining resources to the container (cpu, memory, storage)
               communication of services.
               
- 3> kube-proxy -              
+ 3> kube-proxy -   forward the request
+ 
+ so how do you interact with cluster....?
+ 
+ 1> how to schedule pod?
+ 2> monitoring...?
+ 3> reschedule |restart pod..?
+ 4> join a new node ...?
+ 
+ all this task and node management are done by master node.
+ 
+ 
+ 
+ componenent of Master node 
+ 
+ 1> API server :-
+ 
+        --- Cluster Gateway
+        --- it take inital request fromn client like updates, query
+        --- it acts as a gatkeeper for authentication
+        --- request like deployment, query, updates
+        
+        Request --> API Server --> Validate request --> other processes --> POD
+        
+ 2> Scheduler :-
+ 
+        --- scheduler has intellegance to deploy the pod on which node.
+        --- resources avability (CPU|Memory) & less busy node
+        
+        API Server --> Validate --> Scheduler --> where to put pod ---> Kubelet
+        
+ 3> Controller Manager :-
+ 
+        --- It detects cluster state changes, pod die etc.    
+        
+        --- try to recover cluster state asap.
+        
+        CM ---> Scheduler --> Kubelet
+        
+4> ETCD :-
 
+    --- Key value store
+    --- etcd is the cluster brain
+    --- Cluster changes get stored in the key value pair
+    
+    stored in etcd ...?
+      --- what resource are available ??
+      -- did cluster state change...?
+      --- Is cluster healthy...?
+      --- Application data is not stored in etcd.
+      
+      
+      
+      
+  Kubectl :- it is command line tool for kubernetes
+  
+  kubectl connect to API server to interact with Kubernetes cluster
+  
+  kubectl use for interact with cluster to deploy, delete pod | services.
+  
+  
+  POD :- it is smallest unit.
+  
+  
+  Namespace :- 
+  
+          --- Organize resources in Namespace
+          --- you can say it's virtual cluster inside a cluster
+          --- Loggical grouping of resources. - Stagging | Development, Blue-green deployment
+          
+          use cases
+          
+          --- Structure your component
+          --- Avoid conflicts between teams
+          --- Share services between diffrent environments
+          --- Access and resource limit on namespace level.
+          
+          
+          
+              
+              
+              
+          
+          
+      
+      
+      
+      
+    
+    
+    
