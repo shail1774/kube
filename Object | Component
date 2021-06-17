@@ -117,6 +117,23 @@ Config Map :-
                 Replica sets
                 abstraction of pods
                 database can't be replicated via deployment
+                A deployment provides decalarative updates for pods and replicaset
+                Deployment can be upgraded and patched easier than replicaset 
+                it is easy to rolling out new version of depoyment
+                making it possible to rolling out changes in minimal downtime.
+                
+             
+            Use Cases :- 
+            
+            1> Create a deployement to rollout a replicaset
+            2> Declare new state of pods
+            3> Rollback to an earlier deployment version
+            4> scale up deployment to faciliate more load.
+            5> pause deployment
+            6> use a status of deployment
+            7> 
+          
+                
                 
                 
  Statefulset :-
@@ -131,7 +148,11 @@ Config Map :-
 
  
             
-            
+    Replicaset  :- 
+    
+                 A replicaset purpose is to maintain a stable set of replica pods running at any given time.
+                 
+    
            
    
    
