@@ -95,6 +95,14 @@ Slave node | Worker node
           --- Access and resource limit on namespace level.
           
           
+          characterstics of Namespaces
+          
+          1> You cannot access most resources from another namespace. (Each namespace must define own configmap same applies to secret)
+          2> Services can be access from another namespace
+          3> Component which can't be created within a namespace.  (Persistent volume, Node)
+          
+          
+          
           
               
               
