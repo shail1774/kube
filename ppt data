@@ -1,0 +1,47 @@
+k8s is orchestration tool | container mgmt tool.
+
+Kubernetes is an open-source Container Management tool that automates container deployment, container scaling & container load balancing.
+
+Written on Golang, it has a huge community because it was first developed by Google & later donated to CNCF
+
+
+feature of k8s
+
+1> Orchestaration (clustering of any no of containers running on diffrent network) (container on cloud |on-prem|virtual)
+
+2> Auto scaling (vertical | horizontal (pod +pod))
+
+3> auto healing
+
+4> load balancing (equal distribute load)
+
+5> Platform independent (cloud | physicla | virtual)
+
+6> fault tolerance (node | pod failuer)
+
+7> rollback (going back to previous version)
+
+8> Health monitoring of containers
+
+9> batch execution (one time, sequential, parallel)
+
+components of a master node 
+
+Controller manager - it balance actual state = desire state, through etcd, controller manager get desired state information. 
+
+etcd	Consistent and highly-available key value store used as Kubernetes’ backing store for all cluster data
+
+The API server is the front end for the Kubernetes control plane. Can run several instances of kube-apiserver and balance traffic between those instances This API server interact directly with user 
+
+Scheduler:
+The scheduler schedules the tasks to slave nodes. It stores the resource usage information for each slave node.
+It schedules the work in the form of Pods and Services.
+
+
+Node Components(Worker Nodes)
+
+
+Kube-proxy: This service is responsible for the communication of pods within the cluster and to the outside network, which runs on every node. This service is responsible to maintain network protocols when your pod establishes a network communication.
+kubelet: Each node has a running kubelet service that updates the running node accordingly with the configuration(YAML or JSON) file.
+
+Container Runtime	Is the software that is responsible for running containers. docker, container D, Rocket
