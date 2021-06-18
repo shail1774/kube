@@ -1,5 +1,100 @@
 Kubernetes Architecture
 
+kubernetes = k8s (numeronym), greek word
+old name = project seven, given by google
+
+k8s is orchestration tool
+k8s is container mgmt tool.
+
+docker is containerization tool and k8s manage containers, provide scalability, provide high availability.
+
+k8s is an opensource container mgmt tool which automates container deployment, container scaling, load balancing (equal no of request).
+
+it schedules, run and manages isolated containers which are running on virtual | physical | cloud machines
+
+all top cloud provider support k8s.
+
+
+history :-
+
+Google developed on internal system called borg (later named as omega) to deploy and manage thousond google applications and services on their clusters (group of node and services).
+
+In 2014 google introduced k8s an open source platform written in golang and later donated to CNCF (cloud native computing foundation)
+
+
+online platform for k8s
+1> k8s playground
+2> play with k8s
+3> play with k8s classroom
+
+problem with scaling up the containers
+
+1> container cannot communicate with each other.
+2> autoscaling and load balancing was not possible
+3> containers had to be managed carefully.
+
+feature of k8s
+
+1> Orchestaration (clustering of any no of containers running on diffrent network) (container on cloud |on-prem|virtual)
+
+2> Auto scaling (vertical | horizontal (pod +pod))
+
+3> auto healing
+
+4> load balancing (equal distribute load)
+
+5> Platform independent (cloud | physicla | virtual)
+
+6> fault tolerance (node | pod failuer)
+
+7> rollback (going back to previous version)
+
+8> Health monitoring of containers
+
+9> batch execution (one time, sequential, parallel)
+
+JSON and YAML
+
+cluster --> Node --> Pod --> Container --> Application | microservices
+
+kubernetes archticture
+
+Master --> Control planer |etcd | API Server | kube scheduler
+
+control worker node
+
+API server - recevie requests from kubectl and kubelet and forward to concern object.
+frontend for all communication, This API server interact directly with user, we apply ymal or json manifest to kube-api server.
+
+
+Controller Manager - it balance actual state = desire state, through etcd, controller manager get desired state information.
+make sure actual state of cluster matches to desired state.
+
+
+
+ETCD - key value pair, all infp releated cluster store in etcd. store metadata and status of cluster. etcd is consistent and high available store.
+
+Scheduler - controller manager work with scheduler through API server to perform action in cluster.
+when user make request for creation and mgmt of pods, kube-scheduler is going to take action on these request.
+handle pod creation and management
+scheduler is responsible to find best node for new pod | deployment.
+scheduler gets info for hardware configuration from config file and schedule pods on nodes accordingly.
+
+etcd is access only by API server there is no direct access by componenet.
+
+kubectl - kubectl communicate with API server to perform any action or fetch information (Json or yaml format)
+
+worker node | minion
+
+1> kube-proxy - Networking, assign ip address to pod, no ip address to container. kube-proxy runs on each node and make sure that each pod will get its own unique ip address.
+
+2> Kubelet - control the pod, agent running on the node, listen to k8s master, use port 10255, send success |fail reports to master.
+
+3> Docker (container engine) - work with kubelet, pull images, start|stop containers, exposing containers on ports specified in manifest.
+
+4> pod - small unit in kubernetes , container creates inside pods, pod is group of one or more containers that are deployed together on same host.
+
+
 Master  node
 Slave node | Worker node
 
