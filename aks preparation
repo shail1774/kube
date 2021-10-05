@@ -1,0 +1,37 @@
+
+az group create --location eastus2 --name aks_test
+az aks get-versions --location eastus2
+az aks create --resource-group aks_test --name aks-test1 --node-count 2 --kubernetes-version 1.21.1 --generate-ssh-keys
+az aks show --name aks-test1 --resource-group aks_test
+az aks install-cli
+az aks get-credentials --name aks-test1 --resource-group aks_test
+
+
+
+
+az group create --name aks_test --location eastus
+az vm image list --location eastus
+
+az vm create --resource-group "aks_test" --name "Bastion-Host" --image "RedHat:RHEL:7-LVM:latest" --admin-username "shailesh" --admin-password "Password@123" --location eastus
+  
+az vm open-port --port 80 --resource-group aks_test --name Bastion-Host
+az vm open-port --port 22 --resource-group aks_test --name Bastion-Host --priority 100
+
+
+https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az_vm_open_port
+
+
+[root@Bastion-Host ~]# sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
+sudo sh -c 'echo -e "[azure-cli]
+name=Azure CLI
+baseurl=https://packages.microsoft.com/yumrepos/azure-cli
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+
+
+$ sudo yum install azure-cli
+
+
+$ az login
