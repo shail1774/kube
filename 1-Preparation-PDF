@@ -124,7 +124,6 @@ nginx                           1/1     Running   0          66m
 nginx-random-77fb464776-l5ml6   1/1     Running   0          55m
 [root@Bastion-Host ~]#
 
-
 #########Schedule a pod as follows:
 Name: nginx-kusc00101
 Image: nginx
@@ -145,6 +144,131 @@ spec:
 [root@Bastion-Host ~]#
 
 kubectl create -f disk.yaml
+
+#################Monitor the logs of pod bar and
+
+• Extract log lines corresponding to error file-not-found
+• Write them to /opt/KUTR00101/bar
+
+kubectl logs bar | grep 'unable-to-access-website' > /opt/KUTR00101/bar
+cat /opt/KUTR00101/bar
+
+#############Create a pod with environment variables as var1=value1.Check the environment variable in pod
+
+kubectl run nginx --image=nginx --restart=Never --env=var1=value1
+# then
+kubectl exec -it nginx -- env
+# or
+kubectl exec -it nginx -- sh -c 'echo $var1'
+# or
+kubectl describe po nginx | grep value1
+
+
+##########Print pod name and start time to “/opt/pod-status” file
+
+kubect1 get pods -o=jsonpath='{range items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\n"}{end}'
+
+
+#########Get list of all the pods showing name and namespace with a jsonpath expression.
+
+kubectl get pods -o=jsonpath="{.items[*]['metadata.name' , 'metadata.namespace']}"
+
+[root@Bastion-Host ~]# kubectl get pods -o=jsonpath="{.items[*]['metadata.name' , 'metadata.namespace']}"
+busybox busybox1 front-end-6f94965fd9-z6gbl kua100201-55c786d6bc-57zzd kua100201-55c786d6bc-6c8hz kua100201-55c786d6bc-c8997 kua100201-55c786d6bc-clrxm kua100201-55c786d6bc-nblhs kua100201-55c786d6bc-qtkrz kua100201-55c786d6bc-zfb2p kucc8 nginx nginx-kusc00101 nginx-random-77fb464776-l5ml6 nginx23 default default default default default default default default default default default default default default default[root@Bastion-Host ~]#
+[root@Bastion-Host ~]#
+
+###########Scale the deployment webserver to 6 pods.
+
+k scale deploy webserver --replicas=6
+k get deploy
+
+###############List all persistent volumes sorted by capacity, saving the full kubectl output to
+/opt/KUCC00102/volume_list. Use kubectl 's own functionality for sorting the output, and do not
+manipulate it any further.
+
+k get pv --sort-by=.spec.capacity.storage > /opt/KUCC00102/volume_list
+
+############# Kubernetes worker node, named wk8s-node-0 is in state NotReady. Investigate why this is the case, and
+perform any appropriate steps to bring the node to a Ready state, ensuring that any changes are made
+permanent.
+
+
+sudo -i
+systemctl status kubelet
+systemctl start kubelet
+systemctl enable kubelet
+
+
+##############List the nginx pod with custom columns POD_NAME and POD_STATUS
+
+kubectl get po -o=custom-columns="POD_NAME:.metadata.name, POD_STATUS:.status.containerStatuses[].state"
+
+
+[root@Bastion-Host ~]# kubectl get po -o=custom-columns="POD_NAME:.metadata.name, POD_STATUS:.status.containerStatuses[].state"
+POD_NAME                         POD_STATUS
+busybox                         map[terminated:map[containerID:containerd://a1a659b40e0b8c53b3784f5540ed3496fe0853dbdc5042e71760e4d64d902947 exitCode:0 finishedAt:2021-10-05T08:55:25Z reason:Completed startedAt:2021-10-05T07:55:25Z]]
+busybox1                        map[running:map[startedAt:2021-10-05T17:27:20Z]]
+front-end-6f94965fd9-7ntg8      map[running:map[startedAt:2021-10-05T17:25:04Z]]
+front-end-6f94965fd9-k946x      map[running:map[startedAt:2021-10-05T17:25:05Z]]
+front-end-6f94965fd9-n67bb      map[running:map[startedAt:2021-10-05T17:25:05Z]]
+front-end-6f94965fd9-vnhq9      map[running:map[startedAt:2021-10-05T17:25:05Z]]
+front-end-6f94965fd9-x7kfw      map[running:map[startedAt:2021-10-05T17:25:04Z]]
+front-end-6f94965fd9-z6gbl      map[running:map[startedAt:2021-10-05T07:07:26Z]]
+kua100201-55c786d6bc-57zzd      map[running:map[startedAt:2021-10-05T16:55:18Z]]
+kua100201-55c786d6bc-6c8hz      map[running:map[startedAt:2021-10-05T16:55:18Z]]
+kua100201-55c786d6bc-c8997      map[running:map[startedAt:2021-10-05T16:55:19Z]]
+kua100201-55c786d6bc-clrxm      map[running:map[startedAt:2021-10-05T16:55:18Z]]
+kua100201-55c786d6bc-nblhs      map[running:map[startedAt:2021-10-05T16:55:17Z]]
+kua100201-55c786d6bc-qtkrz      map[running:map[startedAt:2021-10-05T16:55:18Z]]
+kua100201-55c786d6bc-zfb2p      map[running:map[startedAt:2021-10-05T16:55:19Z]]
+kucc8                           map[running:map[startedAt:2021-10-05T06:37:10Z]]
+nginx                           map[running:map[startedAt:2021-10-05T06:05:32Z]]
+nginx-kusc00101                 <none>
+nginx-random-77fb464776-l5ml6   map[running:map[startedAt:2021-10-05T06:16:18Z]]
+nginx23                         map[running:map[startedAt:2021-10-05T17:00:40Z]]
+
+
+########Create a new NetworkPolicy named allow-port-from-namespace in the existing namespace echo. Ensure that the new NetworkPolicy allows Pods in namespace my-app to connect to port 9000 of Pods in namespace echo
+
+Further ensure that the new NetworkPolicy:
+• does not allow access to Pods, which don't listen on port 9000
+• does not allow access from Pods, which are not in namespace my-app
+
+#network.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+name: allow-port-from-namespace
+namespace: internal
+spec:
+podSelector:
+matchLabels: {
+}
+policyTypes:
+- Ingress
+ingress:
+- from:
+- podSelector: {
+}
+ports:
+- protocol: TCP
+port: 9000
+#spec.podSelector namespace pod
+
+
+kubectl create -f network.yaml
+
+##################Create a namespace called 'development' and a pod with image nginx called nginx on this namespace.
+
+
+kubectl create namespace development
+kubectl run nginx --image=nginx --restart=Never -n development
+
+
+#########From the pod label name=cpu-utilizer, find pods running high CPU workloads and write the name of the pod consuming most CPU to the file /opt/KUTR00401/KUTR00401.txt (which already exists).
+
+kubectl top -l name=cpu-utilizer -A
+echo 'pod name' >> /opt/KUT00401/KUT00401.txt
 
 
 #########Create a busybox pod and add “sleep 3600” command
@@ -210,3 +334,217 @@ front-end-6f94965fd9-z6gbl      1/1     Running   0          54m
 nginx-kusc00101                 0/1     Pending   0          8m9s
 busybox                         1/1     Running   0          6m53s
 [root@Bastion-Host ~]#
+
+
+##############Create a new nginx Ingress resource as follows:
+• Name: ping
+• Namespace: ing-internal
+• Exposing service hi on path /hi using service port 5678
+
+kubectl create -f ingress.yaml”
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+name: ping
+namespace: ing-internal
+spec:
+rules:
+- http:
+paths:
+- path: /hi
+pathType: Prefix
+backend:
+service:
+name: hi
+port:
+number: 5678
+
+
+##################Monitor the logs of pod foo and:
+Extract log lines corresponding to error
+unable-to-access-website
+Write them to/opt/KULM00201/foo
+
+alias k=kubectl
+k logs foo | grep unable-to-access-website
+k logs foo | grep unable-to-access-website > /opt/KUIN000601/foo
+
+
+###########Create a nginx pod with label env=test in engineering namespace
+
+#kubectl run nginx --image=nginx --restart=Never --labels=env=test --namespace=engineering --dry-run=client -o yaml > nginx-pod.yaml
+#kubect1 create -f nginx-pod.yaml
+
+
+kubectl run nginx --image=nginx --restart=Never --labels=env=test --namespace=engineering --dry-run -o yaml | kubectl create -n engineering -f –
+
+
+#################Given an existing Kubernetes cluster running version 1.20.0, upgrade all of the Kubernetes control plane and node components on the master node only to version 1.20.1. 
+Be sure to drain the master node before upgrading it and uncordon it after the upgrade
+
+kubectl cordon k8s-master
+kubectl drain k8s-master --delete-local-data --ignore-daemonsets --force
+apt-get install kubeadm=1.20.1-00 kubelet=1.20.1-00 kubectl=1.20.1-00 --disableexcludes=kubernetes
+kubeadm upgrade apply 1.20.1 --etcd-upgrade=false
+systemctl daemon-reload
+systemctl restart kubelet
+kubectl uncordon k8s-master
+
+
+###############Create 2 nginx image pods in which one of them is labelled with env=prod and another one labelled with env=dev and verify the same.
+
+kubectl run --image=nginx --labels=env=prod nginx-prod --dry-run=client -o yaml > nginx-prodpod-1.yaml
+
+
+Now, edit nginx-prod-pod.yaml file and remove entries like “creationTimestamp: null” “dnsPolicy: ClusterFirst”
+
+vim nginx-prod-pod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+env: prod
+name: nginx-prod
+spec:
+containers:
+- image: nginx
+name: nginx-prod
+restartPolicy: Always
+
+# kubectl create -f nginx-prod-pod.yaml
+
+kubectl run --generator=run-pod/v1 --image=nginx --labels=env=dev nginx-dev --dry-run -o yaml > nginx-dev-pod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+env: dev
+name: nginx-dev
+spec:
+containers:
+- image: nginx
+name: nginx-dev
+restartPolicy: Always
+
+# kubectl create -f nginx-prod-dev.yaml
+
+Verify :
+kubectl get po --show-labels
+kubectl get po -l env=prod
+kubectl get po -l env=dev
+
+
+##############Check to see how many nodes are ready (not including nodes tainted NoSchedule ) and write the number to  /opt/KUSC00402/kusc00402.txt.
+
+
+kubectl describe nodes | grep ready|wc -l
+kubectl describe nodes | grep -i taint | grep -i noschedule |wc -l
+echo 3 > /opt/KUSC00402/kusc00402.txt
+
+kubectl get node | grep -i ready |wc -l
+# taintsnoSchedule
+kubectl describe nodes | grep -i taints | grep -i noschedule |wc -l
+echo 2 > /opt/KUSC00402/kusc00402.txt
+
+
+############List “nginx-dev” and “nginx-prod” pod and delete those pods-list
+
+kubect1 get pods -o wide
+kubectl delete po “nginx-dev” kubectl delete po “nginx-prod”
+
+
+################Given a partially-functioning Kubernetes cluster, identify symptoms of failure on the cluster.
+Determine the node, the failing service, and take actions to bring up the failed service and restore the health
+of the cluster. Ensure that any changes are made permanently.
+You can ssh to the relevant I nodes (bk8s-master-0 or bk8s-node-0) using
+
+#sudo -i 
+#vi /var/lib/kubelet/config.yaml 
+#systemctl restart kubelet
+#systemctl enable kubelet
+#kubelet get node
+
+
+##############You have been asked to create a new ClusterRole for a deployment pipeline and bind it to a specific
+ServiceAccount scoped to a specific namespace.
+
+Create a new ClusterRole named deployment-clusterrole, which only allows to create the following resource
+types:
+• Deployment
+• StatefulSet
+• DaemonSet
+Create a new ServiceAccount named cicd-token in the existing namespace app-team1.
+Bind the new ClusterRole deployment-clusterrole lo the new ServiceAccount cicd-token , limited to the
+namespace app-team1.
+
+kubectl create ns app-team1
+kubectl create clusterrole deployment-clusterrole --verb=create --resource=deployments,statefulsets,daemonsets
+kubectl create serviceaccount cicd-token --namespace=app-team1
+kubectl create rolebinding deployment-clusterrole --clusterrole=deployment-clusterrole --serviceaccount=default:cicd-token --namespace=app-team1
+
+
+
+#############Create a deployment spec file that will:
+Launch 7 replicas of the nginx Image with the labelapp_runtime_stage=dev
+deployment name: kual00201
+Save a copy of this spec file to /opt/KUAL00201/spec_deployment.yaml
+(or /opt/KUAL00201/spec_deployment.json).
+When you are done, clean up (delete) any new Kubernetes API object that you produced during this task
+
+
+k create deploy kua100201 --image=nginx --dry-run=client -o yaml > /opt/KUAL00201/spec_deployment.yaml
+
+[root@Bastion-Host ~]# cat  /opt/KUAL00201/spec_deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: kua100201
+  name: kua100201
+spec:
+  replicas: 7
+  selector:
+    matchLabels:
+      app_runtime_stage: dev
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app_runtime_stage: dev
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+
+k create -f /opt/KUAL00201/spec_deployment.yaml
+
+
+################From the pod label name=cpu-utilizer, find pods running high CPU workloads and write the name of the pod consuming most CPU to the file /opt/KUTR00102/KUTR00102.txt (which already exists).
+
+k top po -l name=cpu-utilizer
+
+#################First, create a snapshot of the existing etcd instance running at https://127.0.0.1:2379, saving the snapshot to /srv/data/etcd-snapshot.db.
+
+#backup
+ETCDCTL_API=3 etcdctl --endpoints="https://127.0.0.1:2379" --cacert=/opt/KUIN000601/ca.crt
+--cert=/opt/KUIN000601/etcd-client.crt --key=/opt/KUIN000601/etcd-client.key snapshot save
+/etc/data/etcd-snapshot.db
+
+
+#restore
+ETCDCTL_API=3 etcdctl --endpoints="https://127.0.0.1:2379" --cacert=/opt/KUIN000601/ca.crt
+--cert=/opt/KUIN000601/etcd-client.crt --key=/opt/KUIN000601/etcd-client.key snapshot restore
+/var/lib/backup/etcd-snapshot-previoys.db
+
+
+#############Create a busybox pod that runs the command “env” and save the output to “envpod” file
+
+kubectl run busybox --image=busybox --restart=Never –-rm -it -- env > envpod.yaml
