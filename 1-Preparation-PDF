@@ -1,0 +1,212 @@
+######Set the node named ek8s-node-1 as unavailable and reschedule all the pods running on it
+
+kubectl cordon ek8s-node-1
+kubectl drain ek8s-node-1 --delete-local-data --ignore-daemonsets --force
+
+
+
+######Create a pod that echo “hello world” and then exists. Have the pod deleted automatically when it’s completed
+
+kubectl run busybox --image=busybox -it --rm --restart=Never -- /bin/sh -c 'echo hello world'
+kubectl get po # You shouldn't see pod with the name "busybox"
+
+
+########Scale the deployment presentation to 6 pods.
+
+C:\Users\SCHAVAN>kubectl.exe scale deployment/nginx-app --replicas=6
+deployment.apps/nginx-app scaled
+
+C:\Users\SCHAVAN>kubectl get deployment
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-app   6/6     6            6           12m
+
+
+
+#########Create a busybox pod that runs the command “env” and save the output to “envpod” file
+
+kubectl run busybox --image=busybox --restart=Never –-rm -it -- env > envpod.yaml
+
+
+##########Create an nginx pod and list the pod with different levels of verbosity
+
+#create a pod 
+#kubectl run nginx --image=nginx --restart=Never --port=80
+
+#List the pod with different verbosity
+kubectl get po nginx --v=7
+kubectl get po nginx --v=8
+kubectl get po nginx --v=9
+
+##########Check the Image version of nginx-dev pod using jsonpath | Check the image version in pod without the describe command
+
+kubect1 get po nginx-dev -o jsonpath='{.spec.containers[].image}{"\n"}'
+
+##########Get IP address of the pod – “nginx-dev”
+
+kubect1 get pods -o=jsonpath='{range items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\n"}{end}'
+
+##########Get list of all pods in all namespaces and write it to file “/opt/pods-list.yaml”
+
+kubectl get po –all-namespaces > /opt/pods-list.yaml
+kubectl get po -A > /opt/pods-list.yaml
+
+
+##########Set the node named ek8s-node-1 as unavailable and reschedule all the pods running on it
+
+#kubectl config use-context ek8s-node-1
+#kubect1 drain ek8s-node-1 --ignore-daemonsets --delete-local-data --force
+
+
+##########Create a pod named kucc8 with a single app container for each of the following images running inside (there
+may be between 1 and 4 images specified): nginx + redis + memcached .
+
+kubectl run kucc8 --image=nginx --dry-run -o yaml > kucc8.yaml
+
+[root@Bastion-Host ~]# kubectl create -f kucc8.yaml
+pod/kucc8 created
+[root@Bastion-Host ~]# kubectl get po
+NAME                            READY   STATUS    RESTARTS   AGE
+busybox1                        1/1     Running   0          10m
+kucc8                           4/4     Running   0          10s
+nginx                           1/1     Running   0          31m
+nginx-random-77fb464776-l5ml6   1/1     Running   0          20m
+[root@Bastion-Host ~]# cat kucc8.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  name: kucc8
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+  - image: redis
+    name: redis
+  - image: memcached
+    name: memmcached
+  - image: consul
+    name: consul
+[root@Bastion-Host ~]#
+
+
+########Create a pod as follows:
+Name: mongo
+Using Image: mongo
+In a new Kubernetes namespace named: my-website
+
+[root@Bastion-Host ~]# kubectl create ns my-website
+namespace/my-website created
+[root@Bastion-Host ~]# kubectl run mongo --image=mongo -n my-website
+pod/mongo created
+
+[root@Bastion-Host ~]# kubectl get po -n my-website
+NAME    READY   STATUS    RESTARTS   AGE
+mongo   1/1     Running   0          63s
+[root@Bastion-Host ~]#
+
+
+################
+[root@Bastion-Host ~]# kubectl create deploy front-end --image=nginx
+deployment.apps/front-end created
+[root@Bastion-Host ~]# kubectl expose deployment front-end --name=front-end-svc --port=80 --target-port=80 --type=NodePort
+service/front-end-svc exposed
+[root@Bastion-Host ~]#
+
+
+############List all the pods sorted by name
+
+[root@Bastion-Host ~]# kubectl get pods --sort-by=.metadata.name
+NAME                            READY   STATUS    RESTARTS   AGE
+busybox1                        1/1     Running   0          44m
+front-end-6f94965fd9-z6gbl      1/1     Running   0          4m38s
+kucc8                           4/4     Running   0          35m
+nginx                           1/1     Running   0          66m
+nginx-random-77fb464776-l5ml6   1/1     Running   0          55m
+[root@Bastion-Host ~]#
+
+
+#########Schedule a pod as follows:
+Name: nginx-kusc00101
+Image: nginx
+Node selector: disk=ssd
+
+[root@Bastion-Host ~]# cat disk.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-kusc00101
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+  nodeSelector:
+    disk: ssd
+[root@Bastion-Host ~]#
+
+kubectl create -f disk.yaml
+
+
+#########Create a busybox pod and add “sleep 3600” command
+
+kubectl run busybox --image=busybox --restart=Never -- /bin/sh -c "sleep 3600"
+
+[root@Bastion-Host ~]# kubectl run busybox --image=busybox --restart=Never -- /bin/sh -c "sleep 3600"
+pod/busybox created
+[root@Bastion-Host ~]# kubectl get po
+NAME                            READY   STATUS    RESTARTS   AGE
+busybox                         1/1     Running   0          7s
+busybox1                        1/1     Running   1          88m
+front-end-6f94965fd9-z6gbl      1/1     Running   0          48m
+kucc8                           4/4     Running   0          78m
+nginx                           1/1     Running   0          110m
+nginx-kusc00101                 0/1     Pending   0          83s
+nginx-random-77fb464776-l5ml6   1/1     Running   0          99m
+[root@Bastion-Host ~]#
+
+
+##########List all the pods showing name and namespace with a json path expression
+
+kubectl get pods -o=jsonpath="{.items[*]['metadata.name', 'metadata.namespace']}"
+
+[root@Bastion-Host ~]# kubectl get pods -o=jsonpath="{.items[*]['metadata.name', 'metadata.namespace']}"
+busybox busybox1 front-end-6f94965fd9-z6gbl kucc8 nginx nginx-kusc00101 nginx-random-77fb464776-l5ml6 default default default default default default default[root@Bastion-Host ~]#
+
+
+###########A Kubernetes worker node, named wk8s-node-0 is in state NotReady. Investigate why this is the case, and
+perform any appropriate steps to bring the node to a Ready state, ensuring that any changes are made permanent.
+
+
+systemctl restart kubelet
+systemctl enable kubelet
+
+#############Create and configure the service front-end-service so it's accessible through NodePort and routes to the existing pod named front-end.
+
+[root@Bastion-Host ~]# kubectl expose po front-end-6f94965fd9-z6gbl --name=front-end-service --port=80 --target-port=80 --type=NodePort
+service/front-end-service exposed
+[root@Bastion-Host ~]#
+
+
+[root@Bastion-Host ~]# kubectl get svc
+NAME                TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+front-end-service   NodePort    10.0.58.127    <none>        80:32169/TCP   19s
+front-end-svc       NodePort    10.0.114.203   <none>        80:32171/TCP   50m
+kubernetes          ClusterIP   10.0.0.1       <none>        443/TCP        154m
+nginx-random        ClusterIP   10.0.22.111    <none>        80/TCP         104m
+[root@Bastion-Host ~]#
+
+
+################List all the pods sorted by created timestam
+
+kubectl get pods --sort-by=.metadata.creationTimestamp
+
+[root@Bastion-Host ~]# kubectl get pods --sort-by=.metadata.creationTimestamp
+NAME                            READY   STATUS    RESTARTS   AGE
+nginx                           1/1     Running   0          116m
+nginx-random-77fb464776-l5ml6   1/1     Running   0          105m
+busybox1                        1/1     Running   1          95m
+kucc8                           4/4     Running   0          85m
+front-end-6f94965fd9-z6gbl      1/1     Running   0          54m
+nginx-kusc00101                 0/1     Pending   0          8m9s
+busybox                         1/1     Running   0          6m53s
+[root@Bastion-Host ~]#
