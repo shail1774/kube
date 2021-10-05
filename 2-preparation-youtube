@@ -1,0 +1,301 @@
+############Create new pod callled admin-pod with image busybox, allow the pod to be able to set system time.
+
+[root@Bastion-Host ~]# kubectl run admin-pod --image=busybox --command sleep 3200 --dry-run=client -o yaml > pod.yaml
+[root@Bastion-Host ~]# vi pod.yaml
+[root@Bastion-Host ~]# kubectl create -f pod.yaml
+pod/admin-pod created
+[root@Bastion-Host ~]#
+[root@Bastion-Host ~]# k get po
+NAME                            READY   STATUS       RESTARTS   AGE
+admin-pod                       1/1     Running      0          16s
+
+[root@Bastion-Host ~]# kubectl describe po admin-pod
+Name:         admin-pod
+Namespace:    default
+Priority:     0
+Node:         aks-nodepool1-36055571-vmss000000/10.240.0.4
+Start Time:   Tue, 05 Oct 2021 18:09:10 +0000
+Labels:       run=admin-pod
+Annotations:  <none>
+Status:       Running
+IP:           10.244.1.37
+IPs:
+  IP:  10.244.1.37
+Containers:
+  admin-pod:
+    Container ID:  containerd://277b4455f63e224bbdc3bdbc962f2efd048841910e56e16ea750e2aafc197883
+    Image:         busybox
+    Image ID:      docker.io/library/busybox@sha256:f7ca5a32c10d51aeda3b4d01c61c6061f497893d7f6628b92f822f7117182a57
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3200
+    State:          Running
+      Started:      Tue, 05 Oct 2021 18:09:11 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qnqb8 (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  kube-api-access-qnqb8:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  53s   default-scheduler  Successfully assigned default/admin-pod to aks-nodepool1-36055571-vmss000000
+  Normal  Pulling    53s   kubelet            Pulling image "busybox"
+  Normal  Pulled     53s   kubelet            Successfully pulled image "busybox" in 221.815967ms
+  Normal  Created    53s   kubelet            Created container admin-pod
+  Normal  Started    52s   kubelet            Started container admin-pod
+[root@Bastion-Host ~]#
+
+
+#########A kubeconfig file called test.kubeconfig has been created in /root/TEST, there is something wrong with the configuration. troubleshoot and fix it.
+
+kubectl config view
+
+change porrt from to 6443 from 4380 server controlplane line in est.kubeconfig file
+
+
+#############create a new deployment called web-proj-268 with image nginx:1:16 and 1 replica. Next upgrade the deployment to version 1.17 using rolling update Make sure that the version upgrade is recorded in resource annotation.
+
+
+kubectl create deploy web-proj-268 --image=nginx:1.16 
+
+[root@Bastion-Host ~]# kubectl create deploy web-proj-268 --image=nginx:1.16
+deployment.apps/web-proj-268 created
+[root@Bastion-Host ~]# kubectl get deploy
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+front-end      6/6     6            6           11h
+kua100201      7/7     7            7           86m
+nginx-random   1/1     1            1           12h
+web-proj-268   1/1     1            1           7s
+[root@Bastion-Host ~]#
+
+
+[root@Bastion-Host ~]# k get po web-proj-268-586b4f5bbf-dh58k
+NAME                            READY   STATUS    RESTARTS   AGE
+web-proj-268-586b4f5bbf-dh58k   1/1     Running   0          49s
+[root@Bastion-Host ~]#
+
+[root@Bastion-Host ~]# kubectl describe deploy web-proj-268
+Name:                   web-proj-268
+Namespace:              default
+CreationTimestamp:      Tue, 05 Oct 2021 18:21:36 +0000
+Labels:                 app=web-proj-268
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=web-proj-268
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=web-proj-268
+  Containers:
+   nginx:
+    Image:        nginx:1.16
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   web-proj-268-586b4f5bbf (1/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  107s  deployment-controller  Scaled up replica set web-proj-268-586b4f5bbf to 1
+[root@Bastion-Host ~]#
+
+kubectl set image deployment web-proj-268 nginx=nginx:1.17 --record
+
+
+[root@Bastion-Host ~]# kubectl set image deployment web-proj-268 nginx=nginx:1.17 --record
+Flag --record has been deprecated, --record will be removed in the future
+deployment.apps/web-proj-268 image updated
+
+[root@Bastion-Host ~]# kubectl describe deploy web-proj-268
+Name:                   web-proj-268
+Namespace:              default
+CreationTimestamp:      Tue, 05 Oct 2021 18:21:36 +0000
+Labels:                 app=web-proj-268
+Annotations:            deployment.kubernetes.io/revision: 2
+                        kubernetes.io/change-cause: kubectl set image deployment web-proj-268 nginx=nginx:1.17 --record=true
+Selector:               app=web-proj-268
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=web-proj-268
+  Containers:
+   nginx:
+    Image:        nginx:1.17
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   web-proj-268-56ff444df4 (1/1 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  3m51s  deployment-controller  Scaled up replica set web-proj-268-586b4f5bbf to 1
+  Normal  ScalingReplicaSet  35s    deployment-controller  Scaled up replica set web-proj-268-56ff444df4 to 1
+  Normal  ScalingReplicaSet  31s    deployment-controller  Scaled down replica set web-proj-268-586b4f5bbf to 0
+[root@Bastion-Host ~]#
+
+[root@Bastion-Host ~]# kubectl rollout history deployment web-proj-268
+deployment.apps/web-proj-268
+REVISION  CHANGE-CAUSE
+1         <none>
+2         kubectl set image deployment web-proj-268 nginx=nginx:1.17 --record=true
+
+[root@Bastion-Host ~]#
+
+
+Create new deployment called web-003, scale the deployment to 3  replicas. make sure desired number of pod always running.
+
+kubectl create deployment web-003 --image=nginx --replicas=3 
+
+[root@Bastion-Host ~]# kubectl create deployment web-003 --image=nginx --replicas=3
+deployment.apps/web-003 created
+[root@Bastion-Host ~]# kubectl get deploy web-003
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+web-003   3/3     3            3           15s
+
+kubectl get po -n kube-system
+kubectl describe po kube-controller -n kube-system
+
+#cd /etc/kubernetes/manifest
+#vi kube-controller
+
+kube-controller-manager edit and update
+
+
+kubectl get deployment
+kubectl get pod
+
+upgrade the cluster (master and worker node) from 1.18.0 to 1.19.0
+make sure to first drain both node and make it available after upgrade
+
+
+kubectl get node
+kubectl drain controlplane --ignore-daemonsets
+kubectl get node
+kubectl get pode -o wide
+apt update
+apt install kubeadm=1.19.0-00
+kubeadm upgrade apply v1.19.0
+apt install kubelet=1.19.0-00
+systemctl restart kubelet
+kubectl get node
+kubectl uncordon controlplane
+kubectl get node
+kubectl drain node01 --ignore-daemonsets
+kubectl get pode -o wide
+kubectl get node
+login to node01
+apt update
+apt install kubeadm=1.19.0-00
+kubeadm upgrade node
+apt install kubelet=1.19.0-00
+systemctl restart kubelet
+exit
+kubectl get node
+kubectl uncordon node01
+kubectl get node
+
+
+Deploy a web-load-5461 pod using the nginx:1.17 image with labels set to tier=web
+
+kubectl run web-load-5461 --image=nginx:1.17 --labels=tier=web
+
+
+[root@Bastion-Host ~]# kubectl run web-load-5461 --image=nginx:1.17 --labels=tier=web
+pod/web-load-5461 created
+[root@Bastion-Host ~]# k desrcibe po web-load-5461
+Error: unknown command "desrcibe" for "kubectl"
+
+Did you mean this?
+        describe
+
+Run 'kubectl --help' for usage.
+[root@Bastion-Host ~]# k describe po web-load-5461
+Name:         web-load-5461
+Namespace:    default
+Priority:     0
+Node:         aks-nodepool1-36055571-vmss000000/10.240.0.4
+Start Time:   Tue, 05 Oct 2021 19:22:38 +0000
+Labels:       tier=web
+Annotations:  <none>
+Status:       Running
+IP:           10.244.1.43
+IPs:
+  IP:  10.244.1.43
+Containers:
+  web-load-5461:
+    Container ID:   containerd://264e80a424cfc30d8d2dcf1d6ad3f360b0d788a7674888c21a21dfed085f45f8
+    Image:          nginx:1.17
+    Image ID:       docker.io/library/nginx@sha256:6fff55753e3b34e36e24e37039ee9eae1fe38a6420d8ae16ef37c92d1eb26699
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Tue, 05 Oct 2021 19:22:39 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-xzk6b (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  kube-api-access-xzk6b:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  18s   default-scheduler  Successfully assigned default/web-load-5461 to aks-nodepool1-36055571-vmss000000
+  Normal  Pulled     18s   kubelet            Container image "nginx:1.17" already present on machine
+  Normal  Created    18s   kubelet            Created container web-load-5461
+  Normal  Started    18s   kubelet            Started container web-load-5461
+[root@Bastion-Host ~]#
