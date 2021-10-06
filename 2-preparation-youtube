@@ -299,3 +299,84 @@ Events:
   Normal  Created    18s   kubelet            Created container web-load-5461
   Normal  Started    18s   kubelet            Started container web-load-5461
 [root@Bastion-Host ~]#
+
+
+
+Kubectl automatic completionecho "source <(kubectl completion bash)" >> ~/.bashrc; source ~/.bashrc
+Switch CONTEXT and NAMESPACE before the start of each issue, directly copy the commands in the topic
+Essential alias
+Good use--dry-run=client -o yaml Avoid manual knocking too much
+Good usekubectl explain [resource[.field]]
+
+
+Examination skills
+Set the alias and commands of Kubectl, these lines of commands do not require memory. 
+Save these lines inside the notepad in the upper right corner of the exam interface, need to be executed again when reconnecting.
+
+
+source <(kubectl completion bash) 
+alias k=kubectl
+complete -F __start_kubectl k
+
+https: //kubernetes.io/docs => reference => kubectl => kubectl cheat sheet.
+
+
+Set the kubectl common command segment as an environment variable, save these lines inside the notepad in the upper right corner of the exam interface, need to be executed again when reconnecting.
+
+export dr="--dry-run=client -o yaml"
+
+
+
+
+
+
+Test environment preparation:
+
+=========================
+
+Google Chrome
+
+Science online
+
+passport
+
+Private room: bedroom/meeting room, no one can enter the room during the test
+
+The desk must not have anything unrelated to the exam
+
+Cannot eat or drink during the exam
+
+There should be no strong light behind the candidates, such as windows, etc. (make sure the invigilator can see everything clearly)
+
+Phone off
+
+
+
+For CKA/CKAD exams, you can refer to the help files on the kubernetes.io website, butOnly one Tab can be opened! It's best to form a habit during practice.
+
+Be sure to bookmark frequently used pages when preparing for the test, and know which questions to find templates.
+
+
+You can use copy and paste during the test (it is confusing in the test description, but it is actually possible), so copy the content from the official document to the writing board of the test system as much as possible, and then copy it to the test operating environment on.
+
+There are 4 or 5 environments involved in the exam process, and each question currently has hints and commands in which environment to run, so remember to switch environments.
+
+Different questions have different scores, so do the simple ones first
+
+
+My experience is to put away all the other bookmarks on the browser during the exam, leaving only the bookmarks related to the exam.Use one to close the tab, and then open the next, make sure that only one tab is opened
+
+If the test environment is disconnected, you need to reconnect it, and then ask the invigilator to restore your test environment
+
+No other people can come in the test environment, remember to turn off the phone
+
+
+After the exam:
+
+=========================
+
+You can receive your test scores about 20 hours after the test, basically after 8 pm.
+
+If you pass the exam, you can download the e-certificate directly
+
+You can receive the electronic badge in two weeks
