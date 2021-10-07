@@ -302,81 +302,147 @@ Events:
 
 
 
-Kubectl automatic completionecho "source <(kubectl completion bash)" >> ~/.bashrc; source ~/.bashrc
-Switch CONTEXT and NAMESPACE before the start of each issue, directly copy the commands in the topic
-Essential alias
-Good use--dry-run=client -o yaml Avoid manual knocking too much
-Good usekubectl explain [resource[.field]]
+ Create a static pod on node01 called static-nginx with image nginx and you have to make sure that it is recreated |
+ restarted automatically in case of any failuer happens
+ 
+kubectl get node
+
+ssh node01
+
+#ps -aux|grep kubelet
+/var/lib/kubelet/config.yaml
+
+cat /var/lib/kubelet/config.yaml |grep -i staticpod
+staticpodpath: /etc/kubernetes/manifests
+
+cd /etc/kubernetes/manifests
+vi staticpod.yaml
+
+apiVersion: v1
+kind: pod
+metadata:
+   name: static-nginx 
+spec: 
+  containers:
+  - name: container-nginx
+    image: nginx
+
+:wq
+
+exit
+
+# kubectl get pod
+
+you will see static-pod will be created
 
 
-Examination skills
-Set the alias and commands of Kubectl, these lines of commands do not require memory. 
-Save these lines inside the notepad in the upper right corner of the exam interface, need to be executed again when reconnecting.
+#########create a pod called pod-multi with two containers, description mentioned below 
+
+container1 -> name: container1, image:nginx
+container2 -> name: container2, image:busybox, command: sleep 4800
+
+kubectl run pod-multi --image=nginx --dry-run=client -o yaml > pod-multi.yaml
+
+vi pod-multi.yaml
+
+spec:
+  containers:
+  - image: nginx
+    name: container1
+  - image: busybox
+    name: container2
+    command: ["sleeep", "4800"]
 
 
-source <(kubectl completion bash) 
-alias k=kubectl
-complete -F __start_kubectl k
+:wq
 
-https: //kubernetes.io/docs => reference => kubectl => kubectl cheat sheet.
+kubectl apply -f pod-multi.yaml
 
+kubectl get pod
 
-Set the kubectl common command segment as an environment variable, save these lines inside the notepad in the upper right corner of the exam interface, need to be executed again when reconnecting.
-
-export dr="--dry-run=client -o yaml"
-
-
-
-
-
-
-Test environment preparation:
-
-=========================
-
-Google Chrome
-
-Science online
-
-passport
-
-Private room: bedroom/meeting room, no one can enter the room during the test
-
-The desk must not have anything unrelated to the exam
-
-Cannot eat or drink during the exam
-
-There should be no strong light behind the candidates, such as windows, etc. (make sure the invigilator can see everything clearly)
-
-Phone off
+kubectl describe po pod-multi
 
 
 
-For CKA/CKAD exams, you can refer to the help files on the kubernetes.io website, butOnly one Tab can be opened! It's best to form a habit during practice.
+Creaate a pod called delta-pod in defense namespace belonging to the development environemnt (env=dev) and frontend tier (tier=front).
 
-Be sure to bookmark frequently used pages when preparing for the test, and know which questions to find templates.
+image:nginx:1.17
+
+kubectl get ns
+kubectl create ns defense
+kubectl geet ns
+
+kubectl run delta-pod --image=nginx:1.17 -n defense --labels env=dev, tier=front
+kubectl get po -n defense --show-labels
+kubectl describe po delta-pod
+
+Get the node node01 in JSON format and store it in file at /opt/outputs/nodes-fz456723je.json
+
+kubectl get node
+kubectl get node node01 -o json > /opt/outputs/nodes-fz456723je.json
 
 
-You can use copy and paste during the test (it is confusing in the test description, but it is actually possible), so copy the content from the official document to the writing board of the test system as much as possible, and then copy it to the test operating environment on.
+Take backup of the ETCD database and save it to root with name of back "etcd-backup.db"
 
-There are 4 or 5 environments involved in the exam process, and each question currently has hints and commands in which environment to run, so remember to switch environments.
+#kubectl -n kube-system get po
+kubectl -n kube-system describe po etcd-controlplane
 
-Different questions have different scores, so do the simple ones first
+ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 \
+  --cacert=<trusted-ca-file> --cert=<cert-file> --key=<key-file> \
+  snapshot save <backup-file-location>
+  
+  
+ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 \
+  --cacert=<trusted-ca-file> --cert=<cert-file> --key=<key-file> \
+  snapshot save <backup-file-location>
 
 
-My experience is to put away all the other bookmarks on the browser during the exam, leaving only the bookmarks related to the exam.Use one to close the tab, and then open the next, make sure that only one tab is opened
+A new application finacee-audit-pod is deployed in finance namespace.
+There is something wrong with it. identify and fix this issue.
+Note :- No configuration changed allowed, you can only delete and recreate the pod (if required)
 
-If the test environment is disconnected, you need to reconnect it, and then ask the invigilator to restore your test environment
+kubectl get ns
+kubectl get po -n finance
+kubectl describe po finance-audit-pod -n finance
 
-No other people can come in the test environment, remember to turn off the phone
+change command sheep to sleep
+
+kubectl get po finance-audit-pod -n finance -o yaml > pod.yaml
+
+vi pod.yaml
+
+change command sheep to sleep
+
+:wq
+
+kubectl deleete po finance-audit-pod -n finance --grace-period=0 --force 
+kubectl get po -n finance
+kubectl create -f pod.yaml -n finance
+kubectl get po -n finance
 
 
-After the exam:
 
-=========================
 
-You can receive your test scores about 20 hours after the test, basically after 8 pm.
 
-If you pass the exam, you can download the e-certificate directly
+  
 
-You can receive the electronic badge in two weeks
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
